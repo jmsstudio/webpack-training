@@ -2,6 +2,7 @@ const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptmizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const cssnano = require('cssnano');
+const webpack = require('webpack');
 
 let plugins = [];
 const isProd = process.env.NODE_ENV == 'production';
@@ -17,9 +18,17 @@ if (isProd) {
       }
     })
   );
+
+  plugins.push(new webpack.optimize.ModuleConcatenationPlugin());
 }
 
 plugins.push(new ExtractTextPlugin('styles.css'));
+plugins.push(
+  new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery'
+  })
+);
 
 module.exports = {
   entry: './src/app.js',

@@ -1,5 +1,8 @@
+import 'babel-polyfill';
 import { NegociacaoController } from './controllers/NegociacaoController.js';
 import { Negociacao } from './domain/index.js';
+
+import 'bootstrap/js/modal.js';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
@@ -14,7 +17,9 @@ const method = 'POST';
 const config = {
   method,
   headers,
-  body,
+  body
 };
 
-fetch('http://localhost:8080/negociacoes', config).then(() => console.log('Dado enviado com sucesso'));
+fetch('http://localhost:8080/negociacoes', config).then(() =>
+  console.log('Dado enviado com sucesso')
+);
