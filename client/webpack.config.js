@@ -6,7 +6,8 @@ const cssnano = require('cssnano');
 const webpack = require('webpack');
 
 let plugins = [];
-const isProd = process.env.NODE_ENV == 'production';
+const ENV = process.env.NODE_ENV || 'development';
+const isProd = ENV == 'production';
 
 if (isProd) {
   plugins.push(
@@ -48,6 +49,11 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
+  },
+  resolve: {
+    alias: {
+      config: path.join(__dirname, 'src/config', ENV)
+    }
   },
   module: {
     rules: [

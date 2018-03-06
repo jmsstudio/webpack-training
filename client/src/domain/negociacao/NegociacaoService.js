@@ -1,6 +1,7 @@
 import { HttpService } from '../../util/HttpService.js';
 import { Negociacao } from './Negociacao.js';
 import { ApplicationException } from '../../util/ApplicationException.js';
+import config from 'config';
 
 export class NegociacaoService {
   constructor() {
@@ -8,28 +9,58 @@ export class NegociacaoService {
   }
 
   obtemNegociacoesDaSemana() {
-    return this._http.get('http://localhost:8080/negociacoes/semana').then(
-      dados => dados.map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)),
+    return this._http.get(`${config.baseApiUrl}/negociacoes/semana`).then(
+      dados =>
+        dados.map(
+          objeto =>
+            new Negociacao(
+              new Date(objeto.data),
+              objeto.quantidade,
+              objeto.valor
+            )
+        ),
       err => {
-        throw new ApplicationException('Não foi possível obter as negociações da semana');
+        throw new ApplicationException(
+          'Não foi possível obter as negociações da semana'
+        );
       }
     );
   }
 
   obtemNegociacoesDaSemanaAnterior() {
-    return this._http.get('http://localhost:8080/negociacoes/anterior').then(
-      dados => dados.map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)),
+    return this._http.get(`${config.baseApiUrl}/negociacoes/anterior`).then(
+      dados =>
+        dados.map(
+          objeto =>
+            new Negociacao(
+              new Date(objeto.data),
+              objeto.quantidade,
+              objeto.valor
+            )
+        ),
       err => {
-        throw new ApplicationException('Não foi possível obter as negociações da semana anterior');
+        throw new ApplicationException(
+          'Não foi possível obter as negociações da semana anterior'
+        );
       }
     );
   }
 
   obtemNegociacoesDaSemanaRetrasada() {
-    return this._http.get('http://localhost:8080/negociacoes/retrasada').then(
-      dados => dados.map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)),
+    return this._http.get(`${config.baseApiUrl}/negociacoes/retrasada`).then(
+      dados =>
+        dados.map(
+          objeto =>
+            new Negociacao(
+              new Date(objeto.data),
+              objeto.quantidade,
+              objeto.valor
+            )
+        ),
       err => {
-        throw new ApplicationException('Não foi possível obter as negociações da semana retrasada');
+        throw new ApplicationException(
+          'Não foi possível obter as negociações da semana retrasada'
+        );
       }
     );
   }
@@ -39,14 +70,16 @@ export class NegociacaoService {
       let periodo = await Promise.all([
         this.obtemNegociacoesDaSemana(),
         this.obtemNegociacoesDaSemanaAnterior(),
-        this.obtemNegociacoesDaSemanaRetrasada(),
+        this.obtemNegociacoesDaSemanaRetrasada()
       ]);
       return periodo
         .reduce((novoArray, item) => novoArray.concat(item), [])
         .sort((a, b) => b.data.getTime() - a.data.getTime());
     } catch (err) {
       console.log(err);
-      throw new ApplicationException('Não foi possível obter as negociações do período');
+      throw new ApplicationException(
+        'Não foi possível obter as negociações do período'
+      );
     }
   }
 }
