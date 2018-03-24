@@ -1,30 +1,17 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const OptmizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const HtmlPlugin = require('html-webpack-plugin');
-const cssnano = require('cssnano');
 const webpack = require('webpack');
+const HtmlPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 let plugins = [];
 const ENV = process.env.NODE_ENV || 'development';
 const isProd = ENV == 'production';
 
 if (isProd) {
-  plugins.push(
-    new OptmizeCssAssetsPlugin({
-      cssProcessor: cssnano,
-      cssProcessorOptions: {
-        discardComments: {
-          removeAll: true
-        }
-      }
-    })
-  );
-
   plugins.push(new webpack.optimize.ModuleConcatenationPlugin());
 }
 
-plugins.push(
+plugins = [
   new HtmlPlugin({
     minify: {
       html5: true,
@@ -34,15 +21,16 @@ plugins.push(
     hash: true,
     filename: 'index.html',
     template: `${__dirname}/main.html`
-  })
-);
-plugins.push(new ExtractTextPlugin('styles.css'));
-plugins.push(
+  }),
   new webpack.ProvidePlugin({
     $: 'jquery',
     jQuery: 'jquery'
+  }),
+  new MiniCssExtractPlugin({
+    filename: '[name].css',
+    chunkFilename: '[id].css'
   })
-);
+];
 
 module.exports = {
   entry: './src/app.js',
@@ -66,10 +54,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          use: 'css-loader',
-          fallback: 'style-loader'
-        })
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
@@ -86,6 +71,10 @@ module.exports = {
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'url-loader?limit=10000&mimetype=image/svg+xml'
+      },
+      {
+        test: /\.(png|jpg|jpeg)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'file-loader'
       }
     ]
   },
@@ -102,5 +91,8 @@ module.exports = {
         }
       }
     }
-  }
+  },
+  //paliative - forces update when css is updated
+  // according to issue https://github.com/webpack-contrib/mini-css-extract-plugin/issues/23
+  cache: isProd
 };
